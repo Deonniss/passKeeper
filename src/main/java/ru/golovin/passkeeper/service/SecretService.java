@@ -9,6 +9,7 @@ import ru.golovin.passkeeper.dto.SecretDto;
 import ru.golovin.passkeeper.entity.Secret;
 import ru.golovin.passkeeper.mapper.SecretMapper;
 import ru.golovin.passkeeper.repository.SecretRepository;
+import ru.golovin.passkeeper.service.security.aes.EncryptionService;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -20,6 +21,7 @@ public class SecretService {
     private final UserService userService;
     private final SecretMapper secretMapper;
     private final SecretRepository secretRepository;
+    private final EncryptionService encryptionService;
 
     @Transactional(readOnly = true)
     public List<SecretDto> get(Pageable pageable, String serviceName) {
@@ -34,7 +36,7 @@ public class SecretService {
                                 .user(userService.getCurrentUser())
                                 .serviceName(secretDto.getServiceName())
                                 .serviceLogin(secretDto.getServiceLogin())
-                                .servicePassword(secretDto.getServicePassword())
+                                .servicePassword(encryptionService.encrypt(secretDto.getServicePassword()))
                                 .build()
                 )
         );
