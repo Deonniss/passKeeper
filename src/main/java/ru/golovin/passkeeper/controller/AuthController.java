@@ -9,12 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.golovin.passkeeper.dto.JwtAuthenticationResponse;
 import ru.golovin.passkeeper.dto.SignInRequest;
 import ru.golovin.passkeeper.dto.SignUpRequest;
-import ru.golovin.passkeeper.service.AuthenticationService;
+import ru.golovin.passkeeper.service.security.AuthenticationService;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
     private final AuthenticationService authenticationService;
 
     @PostMapping("/sign-up")
@@ -25,5 +26,10 @@ public class AuthController {
     @PostMapping("/sign-in")
     public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
         return authenticationService.signIn(request);
+    }
+
+    @PostMapping("/refresh-token")
+    public JwtAuthenticationResponse refreshToken(@RequestBody String refreshToken) {
+        return authenticationService.refreshAccessToken(refreshToken);
     }
 }

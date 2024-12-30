@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.golovin.passkeeper.entity.User;
+import ru.golovin.passkeeper.exception.UserAlreadyExistException;
 import ru.golovin.passkeeper.repository.UserRepository;
 
 @Service
@@ -16,14 +17,9 @@ public class UserService {
     private final UserRepository repository;
 
     @Transactional
-    public User save(User user) {
-        return repository.save(user);
-    }
-
-    @Transactional
     public User create(User user) {
         if (repository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Пользователь существует");
+            throw new UserAlreadyExistException("Пользователь существует");
         }
         return save(user);
     }
@@ -42,7 +38,11 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User getCurrentUser() {
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
+    }
+
+    private User save(User user) {
+        return repository.save(user);
     }
 }
