@@ -7,9 +7,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.golovin.passkeeper.dto.AuthRequest;
 import ru.golovin.passkeeper.dto.JwtAuthenticationResponse;
-import ru.golovin.passkeeper.dto.SignInRequest;
-import ru.golovin.passkeeper.dto.SignUpRequest;
 import ru.golovin.passkeeper.entity.Role;
 import ru.golovin.passkeeper.entity.User;
 import ru.golovin.passkeeper.service.UserService;
@@ -24,7 +23,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public JwtAuthenticationResponse signUp(SignUpRequest request) {
+    public JwtAuthenticationResponse signUp(AuthRequest request) {
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -37,7 +36,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public JwtAuthenticationResponse signIn(SignInRequest request) {
+    public JwtAuthenticationResponse signIn(AuthRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getUsername(),
                 request.getPassword()
