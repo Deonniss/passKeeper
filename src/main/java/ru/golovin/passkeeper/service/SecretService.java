@@ -11,7 +11,6 @@ import ru.golovin.passkeeper.mapper.SecretMapper;
 import ru.golovin.passkeeper.repository.SecretRepository;
 import ru.golovin.passkeeper.service.security.aes.EncryptionService;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -43,11 +42,9 @@ public class SecretService {
     }
 
     @Transactional
-    public SecretDto update(SecretDto secretDto) throws AccessDeniedException {
-        Secret secret = secretRepository.findById(Long.valueOf(secretDto.getId())).orElseThrow(EntityNotFoundException::new);
-        if (!secret.getUser().getId().equals(userService.getCurrentUser().getId())) {
-            throw new AccessDeniedException("You do not have permission to access this secret");
-        }
+    public SecretDto update(Integer secretId, SecretDto secretDto) {
+        Secret secret = secretRepository.findById(Long.valueOf(secretId)).orElseThrow(EntityNotFoundException::new);
+        userService.validateUserRelationBySecretId(secret.getUser().getId());
         secret.setServiceName(secretDto.getServiceName());
         secret.setServiceLogin(secretDto.getServiceLogin());
         secret.setServicePassword(secretDto.getServicePassword());
@@ -55,11 +52,9 @@ public class SecretService {
     }
 
     @Transactional
-    public void delete(SecretDto secretDto) throws AccessDeniedException {
-        Secret secret = secretRepository.findById(Long.valueOf(secretDto.getId())).orElseThrow(EntityNotFoundException::new);
-        if (!secret.getUser().getId().equals(userService.getCurrentUser().getId())) {
-            throw new AccessDeniedException("You do not have permission to access this secret");
-        }
-        secretRepository.delete(secret);
+    public void delete(Integer secretId) {
+        Secret secret = secretRepository.findById(Long.valueOf(secretId)).orElseThrow(EntityNotFoundException::new);
+        userService.validateUserRelationBySecretId(secret.getUser().getId());
+        secretRepository.deleteById(Long.valueOf(secretId));
     }
 }

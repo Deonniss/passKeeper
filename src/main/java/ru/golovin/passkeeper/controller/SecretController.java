@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.golovin.passkeeper.dto.SecretDto;
 import ru.golovin.passkeeper.service.SecretService;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -38,14 +37,17 @@ public class SecretController {
         return ResponseEntity.ok(secretService.create(secretDto));
     }
 
-    @PutMapping
-    public ResponseEntity<SecretDto> update(@RequestBody @Valid SecretDto secretDto) throws AccessDeniedException {
-        return ResponseEntity.ok(secretService.update(secretDto));
+    @PutMapping("/{secretId}")
+    public ResponseEntity<SecretDto> update(
+            @PathVariable Integer secretId,
+            @RequestBody @Valid SecretDto secretDto
+    ) {
+        return ResponseEntity.ok(secretService.update(secretId, secretDto));
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> delete(@RequestBody @Valid SecretDto secretDto) throws AccessDeniedException {
-        secretService.delete(secretDto);
+    @DeleteMapping("/{secretId}")
+    public ResponseEntity<Void> delete(@PathVariable Integer secretId) {
+        secretService.delete(secretId);
         return ResponseEntity.ok().build();
     }
 }
